@@ -59,7 +59,8 @@ public class DictionaryCustomsApp extends JFrame{
             }
         });
 		
-		
+		DictionaryCustomsApp hi = new DictionaryCustomsApp();
+		hi.displayDBInfo();
 		
 	}
 	
@@ -80,7 +81,7 @@ public class DictionaryCustomsApp extends JFrame{
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","dion0208526415");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","rootpass");
 		
 		} catch (Exception e) {
 			System.out.println(e);
