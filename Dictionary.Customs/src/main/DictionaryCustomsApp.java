@@ -1,6 +1,12 @@
 package main;
 
 import java.awt.Dimension;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,6 +21,12 @@ public class DictionaryCustomsApp extends JFrame{
 	
 	private static final int WINWIDTH = 500;
 	private static final int WINHEIGHT = 400;
+	
+	// establish conenction to mysql database
+	Connection connection = get_connection();
+	Statement statement = null;
+	PreparedStatement preparedStatement = null;
+	ResultSet resultSet = null;
 
 	private static void createAndShowGUI() {
 		
@@ -46,5 +58,48 @@ public class DictionaryCustomsApp extends JFrame{
                 createAndShowGUI();
             }
         });
+		
+		
+		
 	}
+	
+	public void displayDBInfo() {
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM student");
+			writeResultSet(resultSet);
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+			
+		}
+	}
+	
+	private static Connection get_connection() {
+		Connection connection = null;
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","dion0208526415");
+		
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		return connection;
+	}
+	
+	private static void writeResultSet(ResultSet resultSet) throws SQLException {
+        // ResultSet is initially before the first data set
+        while (resultSet.next()) {
+            // It is possible to get the columns via name
+            // also possible to get the columns via the column number
+            // which starts at 1
+            // e.g. resultSet.getSTring(2);
+            String name = resultSet.getString("name");
+            String major = resultSet.getString("major");
+            System.out.println("Name: " + name);
+            System.out.println("Major: " + major);
+        }
+    }
 }
