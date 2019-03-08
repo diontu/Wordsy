@@ -2,10 +2,14 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,13 +17,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataListener;
 
 public class DictionaryCustomsApp extends JFrame{
 
@@ -38,18 +50,31 @@ public class DictionaryCustomsApp extends JFrame{
 	ResultSet resultSet = null;
 	
 	// front page components
-	
 	JFrame frame;
 	JPanel titlePanel;
 	FlowLayout titleFlowLayout;
 	JLabel titleLbl;
-	JPanel coverPanel;
+	JPanel coverPanelMain;
 	JButton coverAddButton;
+	JButton coverGoToButton;
 	JPanel controlsPanel;
 	JButton controlsFwdButton;
 	JButton controlsBackButton;
 	JPanel mainPanel;
-	Border coverBorder;
+	Border titleBorder;
+	Border controlsBorder;
+	Border coverDictListBorder1;
+	JPanel coverPanelSub2;
+	JPanel coverPanelSub1;
+	JList<String> coverDictList;
+	
+	// the words and definitions
+	String[] wordsList;
+	String[] defsList;
+	
+	//use an array to hold the panels or panes for each page
+	// when selecting a word from the right, a button pops up saying "Go to ..." which will take you to the panel/pane for the word and show the page number at the bottom (where the
+	// controls panel is at "2/45")
 	
 
 	private void createAndShowGUI() {
@@ -57,6 +82,7 @@ public class DictionaryCustomsApp extends JFrame{
         //Create and set up the window.
         frame = new JFrame("Wordsy");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(WINWIDTH, WINHEIGHT);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setBounds((int)(screenSize.getWidth()/1.5), (int)(screenSize.getHeight()/3), WINWIDTH, WINHEIGHT);
         frame.setResizable(false);
@@ -67,27 +93,90 @@ public class DictionaryCustomsApp extends JFrame{
         titleFlowLayout = new FlowLayout();
         titleFlowLayout.setAlignment(FlowLayout.LEFT);
         titlePanel.setLayout(titleFlowLayout);
+        titleBorder = BorderFactory.createMatteBorder(0,0,2,0,Color.GRAY);
+        titlePanel.setBorder(titleBorder);
         
         // add the cover panel
-        coverPanel = new JPanel();
-        coverPanel.setPreferredSize(new Dimension(WINWIDTH, 400));
-        coverPanel.setLayout(new FlowLayout());
-        coverBorder = BorderFactory.createMatteBorder(2,0,2,0,Color.GRAY);
-        coverPanel.setBorder(coverBorder);
+        coverPanelMain = new JPanel();
+        coverPanelMain.setPreferredSize(new Dimension(WINWIDTH, 400));
+        coverPanelMain.setBorder(new EmptyBorder(10,10,10,10));
+        coverPanelMain.setLayout(new BorderLayout());
         
         // add the controls panel
         controlsPanel = new JPanel();
         controlsPanel.setPreferredSize(new Dimension(WINWIDTH, 50));
         controlsPanel.setLayout(new BorderLayout());
+        controlsBorder = BorderFactory.createMatteBorder(2,0,0,0,Color.GRAY);
+        controlsPanel.setBorder(controlsBorder);
         
         // added components to the title panel
         titleLbl = new JLabel("Wordsy");
         titlePanel.add(titleLbl);
         
-        // add the components to cover panel
+        // setting up layout for right side of the cover panel
+        GridBagConstraints gbc = new GridBagConstraints();
+        coverPanelSub2 = new JPanel(new GridBagLayout());
+        
         coverAddButton = new JButton();
         coverAddButton.setText("Add to dictionary...");
-        coverPanel.add(coverAddButton);
+        coverAddButton.addActionListener(addDictOnPress());
+        
+        
+        String[] wordsList = DictionaryDatabase.getWords();
+        
+        coverDictList = new JList<String>();
+        coverDictList.setModel(new AbstractListModel<String>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getElementAt(int i) {
+				// TODO Auto-generated method stub
+				return wordsList[i];
+			}
+
+			@Override
+			public int getSize() {
+				// TODO Auto-generated method stub
+				return wordsList.length;
+			}
+        	
+        });
+        coverDictList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        coverDictList.setLayoutOrientation(JList.VERTICAL);
+        // the scroll pane below holds a max of 14 elements
+        // to adjust how many elements are displayed, every 2 elements, we should add 44 to the height
+        coverDictList.setPreferredSize(new Dimension(120,250));
+        coverDictList.setVisibleRowCount(-1);
+        coverDictListBorder1 = BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY);
+        coverDictList.setFixedCellWidth(150);
+        coverDictList.setBorder(coverDictListBorder1);
+        
+        coverGoToButton = new JButton();
+        coverGoToButton.setText("Go to ...");
+        
+        JScrollPane scrollPaneList = new JScrollPane(coverDictList);
+        scrollPaneList.setPreferredSize(new Dimension(138, 260));
+        
+        gbc.insets = new Insets(10,0,10,0);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = gbc.EAST;
+        coverPanelSub2.add(coverAddButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        coverPanelSub2.add(scrollPaneList, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = gbc.EAST;
+        coverPanelSub2.add(coverGoToButton, gbc);
+        
+        coverPanelMain.add(coverPanelSub2, BorderLayout.EAST);
+        
+        // setting up the left of the cover panel
         
         // add the components to controls panel
         controlsBackButton = new JButton();
@@ -103,7 +192,7 @@ public class DictionaryCustomsApp extends JFrame{
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
         mainPanel.setPreferredSize(new Dimension(WINWIDTH, WINHEIGHT));
         mainPanel.add(titlePanel);
-        mainPanel.add(coverPanel);
+        mainPanel.add(coverPanelMain);
         mainPanel.add(controlsPanel);
  
         //Add the titlePanel.
@@ -114,67 +203,27 @@ public class DictionaryCustomsApp extends JFrame{
         frame.setVisible(true);
     }
 	
-	/**
-	 * This method must run to connect to the database.
-	 */
-	private void connectToDB() {
-		try {
-			connection = get_connection();
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery("SELECT * FROM student");
-			writeResultSet(resultSet);
+	private void updateList() {
+		DefaultListModel<String> model = new DefaultListModel<>();
+		int i=0;
+		while (wordsList != null) {
+			model.addElement(wordsList[i]);
+			i++;
+		}
 		
-		} catch (SQLException e) {
-			e.printStackTrace();
+	}
+	
+	private ActionListener addDictOnPress() {
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				AddDefWindow.run(DictionaryCustomsApp.this);
+			}
 			
-		}
+		};
 	}
-	
-	private static Connection get_connection() {
-		Connection connection = null;
-		
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","root");
-		
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		
-		return connection;
-	}
-	
-	private void writeResultSet(ResultSet resultSet) throws SQLException {
-        // ResultSet is initially before the first data set
-        while (resultSet.next()) {
-            // It is possible to get the columns via name
-            // also possible to get the columns via the column number
-            // which starts at 1
-            // e.g. resultSet.getSTring(2);
-            String name = resultSet.getString("name");
-            String major = resultSet.getString("major");
-            System.out.println("Name: " + name);
-            System.out.println("Major: " + major);
-        }
-    }
-	
-	private void close() {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-
-            if (statement != null) {
-                statement.close();
-            }
-
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (Exception e) {
-
-        }
-    }
 	
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
