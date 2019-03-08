@@ -66,11 +66,11 @@ public class DictionaryCustomsApp extends JFrame{
 	Border coverDictListBorder1;
 	JPanel coverPanelSub2;
 	JPanel coverPanelSub1;
-	JList<String> coverDictList;
+	static JList<String> coverDictList;
 	
-	// the words and definitions
-	String[] wordsList;
-	String[] defsList;
+	// the words and definitions 
+	private static String[] wordsList;
+	private static String[] defsList;
 	
 	//use an array to hold the panels or panes for each page
 	// when selecting a word from the right, a button pops up saying "Go to ..." which will take you to the panel/pane for the word and show the page number at the bottom (where the
@@ -122,7 +122,7 @@ public class DictionaryCustomsApp extends JFrame{
         coverAddButton.addActionListener(addDictOnPress());
         
         
-        String[] wordsList = DictionaryDatabase.getWords();
+        wordsList = DictionaryDatabase.getWords();
         
         coverDictList = new JList<String>();
         coverDictList.setModel(new AbstractListModel<String>() {
@@ -203,14 +203,16 @@ public class DictionaryCustomsApp extends JFrame{
         frame.setVisible(true);
     }
 	
-	private void updateList() {
+	public static void updateList() {
+		wordsList = DictionaryDatabase.getWords();
+		defsList = DictionaryDatabase.getDefs();
 		DefaultListModel<String> model = new DefaultListModel<>();
 		int i=0;
-		while (wordsList != null) {
+		while (wordsList[i] != null) {
 			model.addElement(wordsList[i]);
 			i++;
 		}
-		
+		coverDictList.setModel(model);
 	}
 	
 	private ActionListener addDictOnPress() {

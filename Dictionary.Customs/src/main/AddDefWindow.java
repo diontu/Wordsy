@@ -82,7 +82,8 @@ public class AddDefWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+				DictionaryDatabase.update(wordTextField.getText(), defTextField.getText());
+				defFrame.dispose();
 			}
 			
 		});
@@ -105,20 +106,4 @@ public class AddDefWindow {
 		defFrame.setVisible(true);
 	}
 	
-	public static String[] getWords() {
-		return wordsList;
-	}
-	
-	public static String[] getDefs() {
-		return defsList;
-	}
-	
-	public static String getWord() {
-		return word;
-	}
-	
-	public static String getDef() {
-		return def;
-	}
-
 }

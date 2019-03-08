@@ -12,7 +12,7 @@ public class DictionaryDatabase {
 	
 	private static Connection connection;
 	private static Statement statement = null; // used for getting info
-	private PreparedStatement preparedStatement = null; // used for making queries
+	private static PreparedStatement preparedStatement = null; // used for making queries
 	private static ResultSet resultSet = null; // used for getting info
 	
 	private static String[] wordsList = new String[14];
@@ -24,6 +24,22 @@ public class DictionaryDatabase {
 	
 	public static void main(String[] args) {
 		DictionaryDatabase.connectToDB();
+	}
+	
+	// used to update the database with the new word and def
+	public static void update(String word, String def) {
+		try {
+			connection = get_connection();
+			String queryUpdate = "INSERT INTO dictionary (word, def) VALUES (\'" + word + "\', \'" + def + "\')";
+			preparedStatement = connection.prepareStatement(queryUpdate);
+			preparedStatement.execute();
+			close();
+			DictionaryCustomsApp.updateList();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -40,11 +56,6 @@ public class DictionaryDatabase {
 			e.printStackTrace();
 			
 		}
-	}
-	
-	// used to update the database with the new word and def
-	public void update(String word, String def) {
-		
 	}
 	
 	private static Connection get_connection() {
