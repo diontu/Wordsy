@@ -1,3 +1,3 @@
 # Dictionary.Customs
 
-In this Dictionary app, you can customize your own dictionary to have Words and even definitions of your choice. In this dictionary app, you can view words from a database and "Go to ..." them (essentially displaying the word and their definition on the main page)
+In this Dictionary app, you can customize your own dictionary to have words and definitions of your choice. You can view words that were previously stored and add words to increase your vocabulary! By selecting a word, followed by clicking on the "Go to ..." button, you can view the definition of the selected word.
