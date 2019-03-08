@@ -2,6 +2,7 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -27,9 +28,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataListener;
 
@@ -72,11 +76,13 @@ public class DictionaryCustomsApp extends JFrame{
 	private static String[] wordsList;
 	private static String[] defsList;
 	
+	JLabel displayWordLbl;
+    JLabel displayDefLbl;
+	
 	//use an array to hold the panels or panes for each page
 	// when selecting a word from the right, a button pops up saying "Go to ..." which will take you to the panel/pane for the word and show the page number at the bottom (where the
 	// controls panel is at "2/45")
 	
-
 	private void createAndShowGUI() {
 		
         //Create and set up the window.
@@ -112,6 +118,30 @@ public class DictionaryCustomsApp extends JFrame{
         // added components to the title panel
         titleLbl = new JLabel("Wordsy");
         titlePanel.add(titleLbl);
+        
+        // setting up layout for left side of the cover panel
+        
+        coverPanelSub1 = new JPanel();
+        coverPanelSub1.setLayout(new BoxLayout(coverPanelSub1,BoxLayout.Y_AXIS));
+        JTextArea displayDefTextArea = new JTextArea();
+        displayDefTextArea.setText("TRy to sto ofejfoijds fjdsiofjdsiaofj jfoisafjdjoifsda fdsfdsaf dsa");
+        displayDefTextArea.setWrapStyleWord(true);
+        displayDefTextArea.setLineWrap(true);
+        displayDefTextArea.setOpaque(false);
+        displayDefTextArea.setFocusable(false);
+        displayDefTextArea.setBackground(UIManager.getColor("Label.background"));
+        displayDefTextArea.setFont(UIManager.getFont("Label.font"));
+        displayDefTextArea.setBorder(new CompoundBorder(new EmptyBorder(30,0,20,0), UIManager.getBorder("Label.border")));
+        displayDefTextArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        displayWordLbl = new JLabel();
+        displayWordLbl.setText("YEEE");
+        displayWordLbl.setBorder(new EmptyBorder(0,0,20,0));
+        
+        
+        coverPanelSub1.setBorder(new EmptyBorder(60,20,20,20));
+        coverPanelSub1.add(displayWordLbl);
+        coverPanelSub1.add(displayDefTextArea);
         
         // setting up layout for right side of the cover panel
         GridBagConstraints gbc = new GridBagConstraints();
@@ -164,19 +194,19 @@ public class DictionaryCustomsApp extends JFrame{
         gbc.insets = new Insets(10,0,10,0);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = gbc.EAST;
+        gbc.anchor = GridBagConstraints.EAST;
         coverPanelSub2.add(coverAddButton, gbc);
         gbc.gridx = 0;
         gbc.gridy = 1;
         coverPanelSub2.add(scrollPaneList, gbc);
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.anchor = gbc.EAST;
+        gbc.anchor = GridBagConstraints.EAST;
         coverPanelSub2.add(coverGoToButton, gbc);
         
+        coverPanelMain.add(coverPanelSub1);
         coverPanelMain.add(coverPanelSub2, BorderLayout.EAST);
         
-        // setting up the left of the cover panel
         
         // add the components to controls panel
         controlsBackButton = new JButton();

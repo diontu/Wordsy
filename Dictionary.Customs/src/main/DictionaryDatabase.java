@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 public class DictionaryDatabase {
 	
@@ -20,10 +19,6 @@ public class DictionaryDatabase {
 	
 	private DictionaryDatabase() {
 		
-	}
-	
-	public static void main(String[] args) {
-		DictionaryDatabase.connectToDB();
 	}
 	
 	// used to update the database with the new word and def
@@ -42,22 +37,6 @@ public class DictionaryDatabase {
 		}
 	}
 	
-	/**
-	 * This method must run to connect to the database.
-	 */
-	private static void connectToDB() {
-		try {
-			connection = get_connection();
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery("SELECT * FROM student");
-			writeResultSet(resultSet);
-		
-		} catch (SQLException e) {
-			e.printStackTrace();
-			
-		}
-	}
-	
 	private static Connection get_connection() {
 		Connection connection = null;
 		
@@ -72,20 +51,20 @@ public class DictionaryDatabase {
 		return connection;
 	}
 	
-	// remove static
-	private static void writeResultSet(ResultSet resultSet) throws SQLException {
-        // ResultSet is initially before the first data set
-        while (resultSet.next()) {
-            // It is possible to get the columns via name
-            // also possible to get the columns via the column number
-            // which starts at 1
-            // e.g. resultSet.getSTring(2);
-            String name = resultSet.getString("name");
-            String major = resultSet.getString("major");
-            System.out.println("Name: " + name);
-            System.out.println("Major: " + major);
-        }
-    }
+//	// remove static
+//	private static void writeResultSet(ResultSet resultSet) throws SQLException {
+//        // ResultSet is initially before the first data set
+//        while (resultSet.next()) {
+//            // It is possible to get the columns via name
+//            // also possible to get the columns via the column number
+//            // which starts at 1
+//            // e.g. resultSet.getSTring(2);
+//            String name = resultSet.getString("name");
+//            String major = resultSet.getString("major");
+//            System.out.println("Name: " + name);
+//            System.out.println("Major: " + major);
+//        }
+//    }
 	
 	private static void close() {
         try {
