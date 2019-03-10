@@ -120,5 +120,41 @@ public class DictionaryDatabase {
 		close();
 		return defsList;
 	}
+	
+	public static String getDescription() {
+		String descr = null;
+		try {
+			connection = get_connection();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT descr FROM wordsy");
+			if (resultSet.next()) {
+				descr = resultSet.getString("descr");
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		close();
+		return descr;
+	}
+	
+	public static String getTitle() {
+		String title = null;
+		try {
+			connection = get_connection();
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT title FROM wordsy");
+			if (resultSet.next()) {
+				title = resultSet.getString("title");
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		close();
+		return title;
+	}
 
 }
