@@ -1,4 +1,4 @@
-package main;
+package main.java.Dictionary.Customs;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,7 +42,7 @@ public class DictionaryDatabase {
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","root");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","dion0208526415");
 		
 		} catch (Exception e) {
 			System.out.println(e);

@@ -1,4 +1,4 @@
-package main;
+package main.java.Dictionary.Customs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
