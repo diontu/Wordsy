@@ -30,16 +30,18 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.0'
     
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	compile fileTree(include: '*.jar', dir: 'libs')
+	compile fileTree(dir: 'sql-connector', includes: ['*.jar'])
 	
 	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+	//compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
 
 }
 
 jar {
+	
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	manifest {
-		attributes 'Main-Class': 'main.java.Dictionary.Customs.DictionaryCustomsApp'
+		attributes 'Main-Class': 'main.java.Dictionary.Customs.DictionaryCustomsApp'			
 	}
 }
 
