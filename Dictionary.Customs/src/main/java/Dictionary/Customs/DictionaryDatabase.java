@@ -42,7 +42,7 @@ public class DictionaryDatabase {
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","dion0208526415");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/friends","root","root");
 		
 		} catch (Exception e) {
 			System.out.println(e);
