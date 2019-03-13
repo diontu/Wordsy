@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - checkout
-
+	  path: ~/repo/Dictionary.Customs
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -35,7 +35,7 @@ jobs:
 
       - save_cache:
           paths:
-            - ~/Dictionary.Customs/.gradle
+            - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
