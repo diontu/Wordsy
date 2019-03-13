@@ -12,6 +12,10 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -73,6 +77,7 @@ public class DictionaryCustomsApp extends JFrame{
 	JPanel coverPanelSub1;
 	JTextArea displayDefTextArea;
 	boolean gotoPressed = false;
+	boolean keyPressed = false;
 	static JList<String> coverDictList;
 	
 	// the words and definitions 
@@ -81,6 +86,7 @@ public class DictionaryCustomsApp extends JFrame{
 	
 	JLabel displayWordLbl;
     JLabel displayDefLbl;
+    
 	
 	//use an array to hold the panels or panes for each page
 	// when selecting a word from the right, a button pops up saying "Go to ..." which will take you to the panel/pane for the word and show the page number at the bottom (where the
@@ -199,6 +205,8 @@ public class DictionaryCustomsApp extends JFrame{
         coverDictListBorder1 = BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY);
         coverDictList.setFixedCellWidth(150);
         coverDictList.setBorder(coverDictListBorder1);
+        coverDictList.addKeyListener(arrowKeyPressed());
+        coverDictList.addMouseListener(mouseClicked());
         
         coverGoToButton = new JButton();
         coverGoToButton.setText("Go to ...");
@@ -296,26 +304,61 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
+	/** 
+	 * Sets the current Item to the next item of the list. Returns if there is no previous item. DOES NOT SET THE SELECTED INDEX TO THE NEXT INDEX.
+	 */
+	private void nextListItem() {
+		// the selected index is the current index before the button is pressed
+		int selectedIndex = coverDictList.getSelectedIndex();
+		// none of the tings are selected
+		if (selectedIndex == -1 && !gotoPressed) {
+			String wordlabel = wordsList[0];
+			String deftextarea = defsList[0];
+			displayWordLbl.setText(wordlabel);
+			displayDefTextArea.setText(deftextarea);
+			coverDictList.setSelectedIndex(0);
+			return;
+		}
+		// if it reaches the max bc i have a fixed number of arrays
+		if (selectedIndex == wordsList.length-1) {
+			return;
+		}
+		if (wordsList[selectedIndex + 1] == null && defsList[selectedIndex + 1] == null) {
+			return;
+		}
+		String wordlabel = wordsList[selectedIndex + 1];
+		String deftextarea = defsList[selectedIndex + 1];
+		displayWordLbl.setText(wordlabel);
+		displayDefTextArea.setText(deftextarea);
+	}
+	
+	/** 
+	 * Sets the current Item to the previous item of the list. Returns if there is no previous item. DOES NOT SET THE SELECTED INDEX TO THE PREVIOUS INDEX.
+	 */
+	private void previousListItem() {
+		// the selected index is the current index before the button is pressed
+		int selectedIndex = coverDictList.getSelectedIndex();
+		// none of the tings are selected
+		if (selectedIndex == -1 && !gotoPressed) {
+			return;
+		}
+		if (selectedIndex == 0) {
+			return;
+		}
+		String wordlabel = wordsList[selectedIndex-1];
+		String deftextarea = defsList[selectedIndex-1];
+		displayWordLbl.setText(wordlabel);
+		displayDefTextArea.setText(deftextarea);
+	}
+	
 	private ActionListener backOnPress() {
 		return new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				// the selected index is the current index before the button is pressed
-				int selectedIndex = coverDictList.getSelectedIndex();
-				// none of the tings are selected
-				if (selectedIndex == -1 && !gotoPressed) {
-					return;
-				}
-				if (selectedIndex == 0) {
-					return;
-				}
-				String wordlabel = wordsList[selectedIndex-1];
-				String deftextarea = defsList[selectedIndex-1];
-				displayWordLbl.setText(wordlabel);
-				displayDefTextArea.setText(deftextarea);
-				coverDictList.setSelectedIndex(selectedIndex-1);
+				previousListItem();
+				coverDictList.setSelectedIndex(coverDictList.getSelectedIndex()-1);
 			}
 			
 		};
@@ -327,30 +370,55 @@ public class DictionaryCustomsApp extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				// the selected index is the current index before the button is pressed
+				nextListItem();
 				int selectedIndex = coverDictList.getSelectedIndex();
-				// none of the tings are selected
-				if (selectedIndex == -1 && !gotoPressed) {
-					String wordlabel = wordsList[0];
-					String deftextarea = defsList[0];
-					displayWordLbl.setText(wordlabel);
-					displayDefTextArea.setText(deftextarea);
-					coverDictList.setSelectedIndex(0);
-					return;
+				if (selectedIndex == 0 && !keyPressed) {
+					coverDictList.setSelectedIndex(coverDictList.getSelectedIndex());
+					keyPressed = true;
 				}
-				if (selectedIndex == wordsList.length-1) {
-					return;
+				else {
+					coverDictList.setSelectedIndex(coverDictList.getSelectedIndex() + 1);
+					keyPressed = true;
 				}
-				if (wordsList[selectedIndex + 1] == null && defsList[selectedIndex + 1] == null) {
-					return;
-				}
-				String wordlabel = wordsList[selectedIndex + 1];
-				String deftextarea = defsList[selectedIndex + 1];
-				displayWordLbl.setText(wordlabel);
-				displayDefTextArea.setText(deftextarea);
-				coverDictList.setSelectedIndex(selectedIndex + 1);
 			}
 			
+		};
+	}
+	
+	/**
+	 * If either the UP or DOWN arrow key is pressed, it will perform the required action.
+	 * @return KeyAdapter for the JList
+	 */
+	public KeyAdapter arrowKeyPressed() {
+		return new KeyAdapter() {
+			
+			public void keyPressed(KeyEvent event) {
+				// if the key button pressed is down
+				if (event.getKeyCode() == KeyEvent.VK_DOWN) {
+					nextListItem();
+				}
+				
+				// if the key button pressed is up
+				if (event.getKeyCode() == KeyEvent.VK_UP) {
+					previousListItem();
+				}
+			}
+		};
+	}
+	
+	public MouseAdapter mouseClicked() {
+		return new MouseAdapter() {
+			
+			public void mouseClicked(MouseEvent event) {
+				//
+				if (event.getClickCount() == 1) {
+					int selectedIndex = coverDictList.getSelectedIndex();
+					String wordlabel = wordsList[selectedIndex];
+					String deftextarea = defsList[selectedIndex];
+					displayWordLbl.setText(wordlabel);
+					displayDefTextArea.setText(deftextarea);
+				}
+			}
 		};
 	}
 	
