@@ -42,6 +42,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataListener;
 
+
 public class DictionaryCustomsApp extends JFrame{
 
 	/**
@@ -88,11 +89,17 @@ public class DictionaryCustomsApp extends JFrame{
 	JLabel displayWordLbl;
     JLabel displayDefLbl;
     
-	
-	//use an array to hold the panels or panes for each page
-	// when selecting a word from the right, a button pops up saying "Go to ..." which will take you to the panel/pane for the word and show the page number at the bottom (where the
-	// controls panel is at "2/45")
-	
+	/**
+	 * Creates and shows the GUI created. Functionality of buttons and a few objects are added, but not implemented here.
+	 * The layout of the window is a panel with a borderlayout that holds two boxlayouts. 
+	 * 
+	 * <p>
+	 * 		The app itself is a personal dictionary where you can add, or delete words and their definitions that is stored via MySQL. 
+	 * 		The DictionaryDatabase Class queries all the data from the database while this class allows you to view, add or delete the words.
+	 * 		A static method from the AddDefWindow Class is called when the "add to dictionary" button is pressed, which will open a new window for you to add the words and definition.
+	 * 		The titlePanel and controlsPanel are not used as they might be removed or adjusted on next design changes.
+	 * </p>
+	 */
 	private void createAndShowGUI() {
 	
 		// Add the words and defs from the database into this class
@@ -251,9 +258,9 @@ public class DictionaryCustomsApp extends JFrame{
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
         mainPanel.setPreferredSize(new Dimension(WINWIDTH, WINHEIGHT));
-        mainPanel.add(titlePanel);
+//        mainPanel.add(titlePanel);
         mainPanel.add(coverPanelMain);
-        mainPanel.add(controlsPanel);
+//        mainPanel.add(controlsPanel);
  
         //Add the titlePanel.
         frame.setContentPane(mainPanel);
@@ -263,6 +270,7 @@ public class DictionaryCustomsApp extends JFrame{
         frame.setVisible(true);
     }
 	
+	// updates the list of words whether a delete or addition is performed.
 	public static void updateList() {
 		wordsList = DictionaryDatabase.getWords();
 		defsList = DictionaryDatabase.getDefs();
@@ -273,6 +281,7 @@ public class DictionaryCustomsApp extends JFrame{
 		coverDictList.setModel(model);
 	}
 	
+	// runs a static method from AddDefWindow Class to open a new window to add a word and its definition.
 	private ActionListener addDictOnPress() {
 		return new ActionListener() {
 
@@ -285,6 +294,7 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
+	// deletes the item from the database 
 	private ActionListener deleteOnPress() {
 		return new ActionListener() {
 
@@ -300,9 +310,7 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
-	/** 
-	 * Sets the current Item to the next item of the list. Returns if there is no previous item. DOES NOT SET THE SELECTED INDEX TO THE NEXT INDEX.
-	 */
+	// a function that displays the next item in the list. Used by arrowKeyPressed method in this class.
 	private void nextListItem() {
 		// the selected index is the current index before the button is pressed
 		int selectedIndex = coverDictList.getSelectedIndex();
@@ -328,9 +336,7 @@ public class DictionaryCustomsApp extends JFrame{
 		displayDefTextArea.setText(deftextarea);
 	}
 	
-	/** 
-	 * Sets the current Item to the previous item of the list. Returns if there is no previous item. DOES NOT SET THE SELECTED INDEX TO THE PREVIOUS INDEX.
-	 */
+	// a function that displays the previous item in the list. Used by arrowKeyPressed method in this class.
 	private void previousListItem() {
 		// the selected index is the current index before the button is pressed
 		int selectedIndex = coverDictList.getSelectedIndex();
@@ -347,6 +353,8 @@ public class DictionaryCustomsApp extends JFrame{
 		displayDefTextArea.setText(deftextarea);
 	}
 	
+	//
+	// truncated
 	private ActionListener backOnPress() {
 		return new ActionListener() {
 
@@ -360,6 +368,8 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
+	//
+	// truncated
 	private ActionListener fwdOnPress() {
 		return new ActionListener() {
 
@@ -402,6 +412,10 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
+	/**
+	 * When an item is clicked on the JList, word is highlighted and the word and its definition is displayed on the screen.
+	 * @return MouseAdapter for the JList
+	 */
 	public MouseAdapter mouseClicked() {
 		return new MouseAdapter() {
 			

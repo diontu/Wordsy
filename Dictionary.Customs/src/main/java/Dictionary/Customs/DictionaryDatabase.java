@@ -8,6 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * The Database class for the DictionaryCustomsApp. It establishes a connection to the database and uses static methods to query and return data back to the 
+ * DictionaryCustomsApp Class.
+ * @author diont
+ *
+ */
 public class DictionaryDatabase {
 	
 	private static Connection connection;
@@ -38,6 +44,10 @@ public class DictionaryDatabase {
 		}
 	}
 	
+	/**
+	 * Deletes the word from the database and updates the list
+	 * @param word
+	 */
 	public static void delete(String word) {
 		try {
 			connection = get_connection();
@@ -53,6 +63,10 @@ public class DictionaryDatabase {
 		}
 	}
 	
+	/**
+	 * Established a connection between the database and java.
+	 * @return a Connection that can access the database
+	 */
 	private static Connection get_connection() {
 		Connection connection = null;
 		
@@ -67,6 +81,9 @@ public class DictionaryDatabase {
 		return connection;
 	}
 	
+	/**
+	 * Closes all of the connections to the database.
+	 */
 	private static void close() {
         try {
             if (resultSet != null) {
@@ -85,6 +102,10 @@ public class DictionaryDatabase {
         }
     }
 	
+	/**
+	 * Returns an array of words.
+	 * @return String array of words.
+	 */
 	public static String[] getWords() {
 //		ArrayList<String> wordsArr = new ArrayList<>();
 		try {
@@ -103,6 +124,10 @@ public class DictionaryDatabase {
 		return (String []) wordsList.toArray(new String[0]);
 	}
 	
+	/**
+	 * Returns an array of definitions.
+	 * @return String array of definitions.
+	 */
 	public static String[] getDefs() {
 		try {
 			connection = get_connection();
