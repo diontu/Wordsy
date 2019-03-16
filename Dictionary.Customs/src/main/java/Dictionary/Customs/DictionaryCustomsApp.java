@@ -46,6 +46,7 @@ public class DictionaryCustomsApp extends JFrame{
 
 	/**
 	 * 
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -65,10 +66,10 @@ public class DictionaryCustomsApp extends JFrame{
 	JLabel titleLbl;
 	JPanel coverPanelMain;
 	JButton coverAddButton;
-	JButton coverGoToButton;
 	JPanel controlsPanel;
 	JButton controlsFwdButton;
 	JButton controlsBackButton;
+	JButton coverDeleteButton;
 	JPanel mainPanel;
 	Border titleBorder;
 	Border controlsBorder;
@@ -171,6 +172,7 @@ public class DictionaryCustomsApp extends JFrame{
         
         coverAddButton = new JButton();
         coverAddButton.setText("Add to dictionary...");
+        coverAddButton.setPreferredSize(new Dimension(138, 30));
         coverAddButton.addActionListener(addDictOnPress());
         
     
@@ -208,9 +210,11 @@ public class DictionaryCustomsApp extends JFrame{
         coverDictList.addKeyListener(arrowKeyPressed());
         coverDictList.addMouseListener(mouseClicked());
         
-        coverGoToButton = new JButton();
-        coverGoToButton.setText("Go to ...");
-        coverGoToButton.addActionListener(gotoOnPress());
+        coverDeleteButton = new JButton();
+        coverDeleteButton.setText("Delete");
+        coverDeleteButton.setPreferredSize(new Dimension(138, 30));
+        coverDeleteButton.addActionListener(deleteOnPress());
+        
         
         JScrollPane scrollPaneList = new JScrollPane(coverDictList);
         scrollPaneList.setPreferredSize(new Dimension(138, 260));
@@ -226,7 +230,7 @@ public class DictionaryCustomsApp extends JFrame{
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
-        coverPanelSub2.add(coverGoToButton, gbc);
+        coverPanelSub2.add(coverDeleteButton, gbc);
         
         coverPanelMain.add(coverPanelSub1);
         coverPanelMain.add(coverPanelSub2, BorderLayout.EAST);
@@ -263,10 +267,8 @@ public class DictionaryCustomsApp extends JFrame{
 		wordsList = DictionaryDatabase.getWords();
 		defsList = DictionaryDatabase.getDefs();
 		DefaultListModel<String> model = new DefaultListModel<>();
-		int i=0;
-		while (wordsList[i] != null) {
-			model.addElement(wordsList[i]);
-			i++;
+		for (String word: wordsList) {
+			model.addElement(word);
 		}
 		coverDictList.setModel(model);
 	}
@@ -283,22 +285,16 @@ public class DictionaryCustomsApp extends JFrame{
 		};
 	}
 	
-	private ActionListener gotoOnPress() {
+	private ActionListener deleteOnPress() {
 		return new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				// set action for the goto button
-				int selectedIndex = coverDictList.getSelectedIndex();
-				String wordlabel = wordsList[selectedIndex];
-				String deftextarea = defsList[selectedIndex];
-				displayWordLbl.setText(wordlabel);
-				displayDefTextArea.setText(deftextarea);
-				gotoPressed = true;
-				
-				// the following code sets the index of the selected list... (index starts at 0)
-//				coverDictList.setSelectedIndex(3);
+				String selectedValue = coverDictList.getSelectedValue();
+				if (selectedValue != null) {
+					DictionaryDatabase.delete(selectedValue);
+				}
 			}
 			
 		};

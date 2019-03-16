@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class DictionaryDatabase {
 	
@@ -14,8 +15,8 @@ public class DictionaryDatabase {
 	private static PreparedStatement preparedStatement = null; // used for making queries
 	private static ResultSet resultSet = null; // used for getting info
 	
-	private static String[] wordsList = new String[14];
-	private static String[] defsList = new String[14];
+	private static ArrayList<String> wordsList = new ArrayList<>();
+	private static ArrayList<String> defsList = new ArrayList<>();
 	
 	private DictionaryDatabase() {
 		
@@ -27,6 +28,21 @@ public class DictionaryDatabase {
 			connection = get_connection();
 			String queryUpdate = "INSERT INTO dictionary (word, def) VALUES (\'" + word + "\', \'" + def + "\')";
 			preparedStatement = connection.prepareStatement(queryUpdate);
+			preparedStatement.execute();
+			close();
+			DictionaryCustomsApp.updateList();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void delete(String word) {
+		try {
+			connection = get_connection();
+			String queryDelete = "DELETE FROM dictionary WHERE word=\'" + word + "\'";
+			preparedStatement = connection.prepareStatement(queryDelete);
 			preparedStatement.execute();
 			close();
 			DictionaryCustomsApp.updateList();
@@ -50,21 +66,6 @@ public class DictionaryDatabase {
 		
 		return connection;
 	}
-	
-//	// remove static
-//	private static void writeResultSet(ResultSet resultSet) throws SQLException {
-//        // ResultSet is initially before the first data set
-//        while (resultSet.next()) {
-//            // It is possible to get the columns via name
-//            // also possible to get the columns via the column number
-//            // which starts at 1
-//            // e.g. resultSet.getSTring(2);
-//            String name = resultSet.getString("name");
-//            String major = resultSet.getString("major");
-//            System.out.println("Name: " + name);
-//            System.out.println("Major: " + major);
-//        }
-//    }
 	
 	private static void close() {
         try {
@@ -90,19 +91,16 @@ public class DictionaryDatabase {
 			connection = get_connection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT word FROM dictionary");
+			wordsList = new ArrayList<>();
 			for (int i=0; resultSet.next(); i++) {
-				wordsList[i] = resultSet.getString("word");
+				wordsList.add(resultSet.getString("word"));
 			}
-//			while(resultSet.next()) {
-//				wordsArr.add(resultSet.getString("word"));
-//			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-//		wordsList = (String[]) wordsArr.toArray();
 		close();
-		return wordsList;
+		return (String []) wordsList.toArray(new String[0]);
 	}
 	
 	public static String[] getDefs() {
@@ -110,15 +108,16 @@ public class DictionaryDatabase {
 			connection = get_connection();
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery("SELECT def FROM dictionary");
+			defsList = new ArrayList<>();
 			for (int i=0; resultSet.next(); i++) {
-				defsList[i] = resultSet.getString("def");
+				defsList.add(resultSet.getString("def"));
 			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		close();
-		return defsList;
+		return (String []) defsList.toArray(new String[0]);
 	}
 	
 	public static String getDescription() {
