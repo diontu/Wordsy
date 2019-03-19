@@ -52,7 +52,7 @@ public class DictionaryCustomsApp extends JFrame{
 	private static final long serialVersionUID = 1L;
 	
 	private static final int WINWIDTH = 500;
-	private static final int WINHEIGHT = 500;
+	private static final int WINHEIGHT = 450;
 	
 	// establish conenction to mysql database
 	Connection connection;
@@ -89,6 +89,10 @@ public class DictionaryCustomsApp extends JFrame{
 	JLabel displayWordLbl;
     JLabel displayDefLbl;
     
+    private static DictionaryCustomsApp app;
+    
+    private static DictionaryDatabase database;
+    
 	/**
 	 * Creates and shows the GUI created. Functionality of buttons and a few objects are added, but not implemented here.
 	 * The layout of the window is a panel with a borderlayout that holds two boxlayouts. 
@@ -100,11 +104,21 @@ public class DictionaryCustomsApp extends JFrame{
 	 * 		The titlePanel and controlsPanel are not used as they might be removed or adjusted on next design changes.
 	 * </p>
 	 */
+    
+    public static DictionaryCustomsApp getInstance() {
+    	if (app == null) {
+    		app = new DictionaryCustomsApp();
+    	}
+    	return app;
+    }
+    
 	private void createAndShowGUI() {
+		
+		database = DictionaryDatabase.getInstance();
 	
 		// Add the words and defs from the database into this class
-		wordsList = DictionaryDatabase.getWords();
-        defsList = DictionaryDatabase.getDefs();
+		wordsList = database.getWords();
+        defsList = database.getDefs();
 		
         //Create and set up the window.
         frame = new JFrame("Wordsy");
@@ -128,28 +142,14 @@ public class DictionaryCustomsApp extends JFrame{
         coverPanelMain.setPreferredSize(new Dimension(WINWIDTH, 400));
         coverPanelMain.setBorder(new EmptyBorder(10,10,10,10));
         coverPanelMain.setLayout(new BorderLayout());
-        
-        // add the controls panel
-        controlsPanel = new JPanel();
-        controlsPanel.setPreferredSize(new Dimension(WINWIDTH, 50));
-        controlsPanel.setLayout(new BorderLayout());
-        controlsBorder = BorderFactory.createMatteBorder(2,0,0,0,Color.GRAY);
-        controlsPanel.setBorder(controlsBorder);
-        
-        // added components to the title panel
-        titleLbl = new JLabel("Wordsy");
-        titleLbl.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        titleLbl.setFocusable(true);
-        titleLbl.setBorder(new EmptyBorder(10,224,0,0));
-        titlePanel.add(titleLbl);
+       
         
         // setting up layout for left side of the cover panel
-        
         coverPanelSub1 = new JPanel();
         coverPanelSub1.setLayout(new FlowLayout());
         coverPanelSub1.setLayout(new BoxLayout(coverPanelSub1,BoxLayout.Y_AXIS));
         displayDefTextArea = new JTextArea();
-        displayDefTextArea.setText(DictionaryDatabase.getDescription());
+        displayDefTextArea.setText(database.getDescription());
         
         displayDefTextArea.setPreferredSize(new Dimension(300,250));
         displayDefTextArea.setWrapStyleWord(true);
@@ -163,7 +163,7 @@ public class DictionaryCustomsApp extends JFrame{
         displayDefTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         
         displayWordLbl = new JLabel();
-        displayWordLbl.setText(DictionaryDatabase.getTitle());
+        displayWordLbl.setText(database.getTitle());
         displayWordLbl.setBorder(new EmptyBorder(0,0,20,0));
         displayWordLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         displayWordLbl.setFont(new Font("Times New Roman", Font.BOLD, 42));
@@ -181,8 +181,6 @@ public class DictionaryCustomsApp extends JFrame{
         coverAddButton.setText("Add to dictionary...");
         coverAddButton.setPreferredSize(new Dimension(138, 30));
         coverAddButton.addActionListener(addDictOnPress());
-        
-    
         
         coverDictList = new JList<String>();
         coverDictList.setModel(new AbstractListModel<String>() {
@@ -241,26 +239,13 @@ public class DictionaryCustomsApp extends JFrame{
         
         coverPanelMain.add(coverPanelSub1);
         coverPanelMain.add(coverPanelSub2, BorderLayout.EAST);
-        
-        
-        // add the components to controls panel
-        controlsBackButton = new JButton();
-        controlsFwdButton = new JButton();
-        controlsBackButton.setText("<<");
-        controlsFwdButton.setText(">>");
-        controlsFwdButton.addActionListener(fwdOnPress());
-        controlsBackButton.addActionListener(backOnPress());
-        controlsPanel.add(controlsBackButton, BorderLayout.WEST);
-        controlsPanel.add(controlsFwdButton, BorderLayout.EAST);
 
         
         // all panels go into this main panel
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
         mainPanel.setPreferredSize(new Dimension(WINWIDTH, WINHEIGHT));
-//        mainPanel.add(titlePanel);
         mainPanel.add(coverPanelMain);
-//        mainPanel.add(controlsPanel);
  
         //Add the titlePanel.
         frame.setContentPane(mainPanel);
@@ -271,9 +256,9 @@ public class DictionaryCustomsApp extends JFrame{
     }
 	
 	// updates the list of words whether a delete or addition is performed.
-	public static void updateList() {
-		wordsList = DictionaryDatabase.getWords();
-		defsList = DictionaryDatabase.getDefs();
+	public void updateList() {
+		wordsList = database.getWords();
+		defsList = database.getDefs();
 		DefaultListModel<String> model = new DefaultListModel<>();
 		for (String word: wordsList) {
 			model.addElement(word);
@@ -303,7 +288,7 @@ public class DictionaryCustomsApp extends JFrame{
 				
 				String selectedValue = coverDictList.getSelectedValue();
 				if (selectedValue != null) {
-					DictionaryDatabase.delete(selectedValue);
+					database.delete(selectedValue);
 				}
 			}
 			
@@ -351,44 +336,6 @@ public class DictionaryCustomsApp extends JFrame{
 		String deftextarea = defsList[selectedIndex-1];
 		displayWordLbl.setText(wordlabel);
 		displayDefTextArea.setText(deftextarea);
-	}
-	
-	//
-	// truncated
-	private ActionListener backOnPress() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				previousListItem();
-				coverDictList.setSelectedIndex(coverDictList.getSelectedIndex()-1);
-			}
-			
-		};
-	}
-	
-	//
-	// truncated
-	private ActionListener fwdOnPress() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				nextListItem();
-				int selectedIndex = coverDictList.getSelectedIndex();
-				if (selectedIndex == 0 && !keyPressed) {
-					coverDictList.setSelectedIndex(coverDictList.getSelectedIndex());
-					keyPressed = true;
-				}
-				else {
-					coverDictList.setSelectedIndex(coverDictList.getSelectedIndex() + 1);
-					keyPressed = true;
-				}
-			}
-			
-		};
 	}
 	
 	/**

@@ -23,20 +23,32 @@ public class DictionaryDatabase {
 	
 	private static ArrayList<String> wordsList = new ArrayList<>();
 	private static ArrayList<String> defsList = new ArrayList<>();
+	private static DictionaryCustomsApp app;
+	
+	private static DictionaryDatabase dictionaryDatabase;
 	
 	private DictionaryDatabase() {
 		
 	}
 	
+	// implementing singleton 
+	public static DictionaryDatabase getInstance() {
+		if (dictionaryDatabase == null) {
+			app = DictionaryCustomsApp.getInstance();
+			return dictionaryDatabase = new DictionaryDatabase();
+		}
+		return dictionaryDatabase;
+	}
+	
 	// used to update the database with the new word and def
-	public static void update(String word, String def) {
+	public void update(String word, String def) {
 		try {
 			connection = get_connection();
 			String queryUpdate = "INSERT INTO dictionary (word, def) VALUES (\'" + word + "\', \'" + def + "\')";
 			preparedStatement = connection.prepareStatement(queryUpdate);
 			preparedStatement.execute();
 			close();
-			DictionaryCustomsApp.updateList();
+			app.updateList();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -48,14 +60,14 @@ public class DictionaryDatabase {
 	 * Deletes the word from the database and updates the list
 	 * @param word
 	 */
-	public static void delete(String word) {
+	public void delete(String word) {
 		try {
 			connection = get_connection();
 			String queryDelete = "DELETE FROM dictionary WHERE word=\'" + word + "\'";
 			preparedStatement = connection.prepareStatement(queryDelete);
 			preparedStatement.execute();
 			close();
-			DictionaryCustomsApp.updateList();
+			app.updateList();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -67,7 +79,7 @@ public class DictionaryDatabase {
 	 * Established a connection between the database and java.
 	 * @return a Connection that can access the database
 	 */
-	private static Connection get_connection() {
+	private Connection get_connection() {
 		Connection connection = null;
 		
 		try {
@@ -84,7 +96,7 @@ public class DictionaryDatabase {
 	/**
 	 * Closes all of the connections to the database.
 	 */
-	private static void close() {
+	private void close() {
         try {
             if (resultSet != null) {
                 resultSet.close();
@@ -106,7 +118,7 @@ public class DictionaryDatabase {
 	 * Returns an array of words.
 	 * @return String array of words.
 	 */
-	public static String[] getWords() {
+	public String[] getWords() {
 //		ArrayList<String> wordsArr = new ArrayList<>();
 		try {
 			connection = get_connection();
@@ -128,7 +140,7 @@ public class DictionaryDatabase {
 	 * Returns an array of definitions.
 	 * @return String array of definitions.
 	 */
-	public static String[] getDefs() {
+	public String[] getDefs() {
 		try {
 			connection = get_connection();
 			statement = connection.createStatement();
@@ -145,7 +157,7 @@ public class DictionaryDatabase {
 		return (String []) defsList.toArray(new String[0]);
 	}
 	
-	public static String getDescription() {
+	public String getDescription() {
 		String descr = null;
 		try {
 			connection = get_connection();
@@ -163,7 +175,7 @@ public class DictionaryDatabase {
 		return descr;
 	}
 	
-	public static String getTitle() {
+	public String getTitle() {
 		String title = null;
 		try {
 			connection = get_connection();

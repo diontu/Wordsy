@@ -28,6 +28,8 @@ public class AddDefWindow {
 	private static String[] defsList = new String[20];
 	private static String word;
 	private static String def;
+	
+	private static DictionaryDatabase database;
 
 	private AddDefWindow() {
 		
@@ -36,6 +38,7 @@ public class AddDefWindow {
 	public static void run(DictionaryCustomsApp dca) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+            	database = DictionaryDatabase.getInstance();
                 createAndShowGUI(dca);
             }
         });
@@ -63,6 +66,7 @@ public class AddDefWindow {
 		
 		JLabel defLbl = new JLabel();
 		defLbl.setText("Definition:");
+		defLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 		
 		JTextArea defTextArea = new JTextArea();
 		defTextArea.setPreferredSize(new Dimension(WINWIDTH,120));
@@ -91,7 +95,7 @@ public class AddDefWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				DictionaryDatabase.update(wordTextField.getText(), defTextArea.getText());
+				database.update(wordTextField.getText(), defTextArea.getText());
 				defFrame.dispose();
 			}
 			
