@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - checkout
-      - run: chmod +x gradlew
+      
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -31,12 +31,12 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: ./gradlew dependencies
+      - run: ./gradle dependencies
 
       - save_cache:
           paths:
-            - ~/.gradlew
+            - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: ./gradlew test
+      - run: ./gradle test
