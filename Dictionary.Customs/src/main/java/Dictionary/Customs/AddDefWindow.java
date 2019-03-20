@@ -20,6 +20,11 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * Opens a window to add a new word and its definition into the dictionary.
+ * @author diont
+ *
+ */
 public class AddDefWindow {
 	
 	private static final int WINWIDTH = 300;
